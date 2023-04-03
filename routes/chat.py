@@ -14,4 +14,5 @@ class Chat(Resource):
     def post(self, key):
         # 获取请求数据
         data = request.json
+        logger.info("commit push for hook!")
         logger.info(data)
