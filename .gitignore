@@ -1,0 +1,17 @@
+/app/private/
+/conf/conf_dev.py
+# Other
+.idea/
+.vscode/
+
+# githook
+githook.py
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.egg
+*.pyo
