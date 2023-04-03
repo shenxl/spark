@@ -2,6 +2,7 @@ import socks
 import socket
 import os
 from itertools import chain
+import pandas as pd
 
 from .executor import CommandStrategy
 from logs.logger import Logger
@@ -32,6 +33,8 @@ from logs.logger import Logger
 
 # 设置日志
 logger = Logger(__name__)
+# logger.info(os.getcwd())
+df = pd.read_csv('./acts.csv', encoding='gb2312', header=0)
 
 env = os.environ.get('ENV')
 if env != 'prod':
@@ -48,21 +51,47 @@ chat = PromptLayerChatOpenAI(temperature=0.9, pl_tags=["woa_chat"])
 
 # 设置日志
 logger = Logger(__name__)
-class MessageCommandStrategy(CommandStrategy):
+class ArtsCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
         # 当前bot的当前用户对话, 判断是否是以 act-> 开头
-        template="You are a helpful assistant to me."
-        system_message_prompt = SystemMessagePromptTemplate.from_template(template)
-        human_template="{text}"
-        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-        chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
-        reply = chat(chat_prompt.format_prompt(text=command_arg).to_messages())
-        answer = reply.content
         user_id = robot["user_id"]
         message = {
             "msgtype": "text",
             "text": {
-                "content": f"<at user_id=\"{user_id}\"></at>{answer}"
+                "content": f"<at user_id=\"{user_id}\"></at>https://kdocs.cn/l/cgPpL1tqMyUe"
+            }
+        }
+        return (message , None)
+    
+
+
+class ArtsSetCommandStrategy(CommandStrategy):
+    def execute(self, robot, command_arg):
+        # 当前bot的当前用户对话, 判断是否是以 act-> 开头
+        user_id = robot["user_id"]
+        
+        row = df.loc[df['num'] == int(command_arg), ['role', 'prompt']].squeeze()
+        role, prompt = row['role'], row['prompt']
+        
+        template="请理解以下的扮演者的prompt,为用户与该prompt交流做出简要解释。并给出一个询问此扮演者的示例\
+            返回格式为：\
+            ---\
+            简要解释:\
+            ---\
+            使用示例:"
+        
+        system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+        human_template="{text}"
+        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+        chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+        reply = chat(chat_prompt.format_prompt(text=prompt).to_messages())
+        answer = reply.content
+        
+        
+        message = {
+            "msgtype": "text",
+            "text": {
+                "content": f"<at user_id=\"{user_id}\"></at>当前需要设置的角色为{role}:\n\n{answer}"
             }
         }
         return (message , None)

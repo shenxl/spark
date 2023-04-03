@@ -9,6 +9,7 @@ from commands.executor import CommandExecutor
 from commands.parse import CommandType
 from commands.executor import HelpCommandStrategy, UnknownCommandStrategy
 from commands.message import MessageCommandStrategy
+from commands.arts import ArtsCommandStrategy,ArtsSetCommandStrategy
 
 logger = Logger(__name__)
 
@@ -16,9 +17,11 @@ executor = CommandExecutor()
 executor.add_strategy(CommandType.HELP, HelpCommandStrategy(executor))
 executor.add_strategy(CommandType.MSG, MessageCommandStrategy())
 executor.add_strategy(CommandType.UNKNOWN, UnknownCommandStrategy())
-
+executor.add_strategy(CommandType.ARTS, ArtsCommandStrategy())
+executor.add_strategy(CommandType.ARTS_SET, ArtsSetCommandStrategy())
 
 executor.set_instruction_desc(CommandType.HELP,"输入%help%, 显示所有指令列表。")
+executor.set_instruction_desc(CommandType.HELP,"输入%arts%, 返回支持的角色列表。")
 class Chat(Resource):
     def get(self, key):
         return {"result": "ok"}
