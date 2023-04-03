@@ -8,11 +8,13 @@ from app.replybot import replyBot
 from commands.executor import CommandExecutor
 from commands.parse import CommandType
 from commands.executor import HelpCommandStrategy, UnknownCommandStrategy
+from commands.message import MessageCommandStrategy
 
 logger = Logger(__name__)
 
 executor = CommandExecutor()
 executor.add_strategy(CommandType.HELP, HelpCommandStrategy(executor))
+executor.add_strategy(CommandType.MSG, MessageCommandStrategy())
 executor.add_strategy(CommandType.UNKNOWN, UnknownCommandStrategy())
 
 
