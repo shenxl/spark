@@ -57,6 +57,12 @@ class HelpCommandStrategy(CommandStrategy):
 
 class UnknownCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
-        return ("无法识别的指令" , None)
+        message = {
+            "msgtype": "markdown",
+            "markdown": {
+                "text": f"无法识别的指令"
+            }
+        }
+        return (message , None)
 
 

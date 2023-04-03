@@ -7,11 +7,14 @@ from app.replybot import replyBot
 
 from commands.executor import CommandExecutor
 from commands.parse import CommandType
-from commands.executor import HelpCommandStrategy
+from commands.executor import HelpCommandStrategy, UnknownCommandStrategy
 
 logger = Logger(__name__)
+
 executor = CommandExecutor()
 executor.add_strategy(CommandType.HELP, HelpCommandStrategy(executor))
+executor.add_strategy(CommandType.UNKNOWN, UnknownCommandStrategy())
+
 
 executor.set_instruction_desc(CommandType.HELP,"输入%help%, 显示所有指令列表。")
 class Chat(Resource):
@@ -25,5 +28,5 @@ class Chat(Resource):
         replybot = replyBot(data, key)
         content = replybot.content
         # # 执行策略
-        (message, paylopad), status = executor.execute(replybot, content)
+        (message, paylopad) = executor.execute(replybot, content)
         replybot.reply(message)
