@@ -74,12 +74,13 @@ class ArtsSetCommandStrategy(CommandStrategy):
         role, prompt = row['role'], row['prompt']
         
         template="以下是一份扮演者的prompt,请理解并从扮演者的角度，给出对此prompt的简要解释。\
-            考虑用户如何与此扮演者进行交互，并给出一个示例\
+            考虑用户应该如何与此扮演者进行交互，并给出一个示例\
             返回格式为：\
             ---\
-            简要解释:\
+            💡 简要解释:\
             ---\
-            使用示例:"
+            🙎 用户(user): \
+            🥷 扮演者(bot): "
         
         system_message_prompt = SystemMessagePromptTemplate.from_template(template)
         human_template="prompt:{text}"
