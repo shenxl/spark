@@ -49,7 +49,7 @@ class HelpCommandStrategy(CommandStrategy):
             info = "\n".join(desc_list)
             
             message = {
-                "type": "markdown",
+                "msgtype": "markdown",
                 "content": f"#### {title}  \n\n {info}"
             }
             return (message , None)
@@ -57,7 +57,7 @@ class HelpCommandStrategy(CommandStrategy):
 class UnknownCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
         message = {
-            "type": "markdown",
+            "msgtype": "markdown",
             "content":"无法识别的指令"
         }
         return (message , None)

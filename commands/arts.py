@@ -55,15 +55,12 @@ class ArtsCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
         # 当前bot的当前用户对话, 判断是否是以 act-> 开头
         # user_id = robot["user_id"]
-
+        card_text ="""✅ 请在下方列表中挑选角色\n\n✅ 通过指令 `%acts set <序号>%` 进行角色设定, 例如：`%acts set 5%`\n\n✅ BOT会依据此角色的设定与你交流\n\n🎉 玩的开心"""
         message = {
             "msgtype": "link",
             "link": {
                 "title": "🥷 角色卡片",
-                "text": "- 请在列表中挑选角色 \n"+
-                    "- 通过指令 `%acts set <序号>%` 进行角色设定  \n"+
-                    "例如：`%acts set 5%`  \n"+
-                    "- BOT会依据此角色的设定与你交流",
+                "text": card_text,
                 "messageUrl": "https://kdocs.cn/l/cgPpL1tqMyUe",
                 "btnTitle": "查看列表"
             }
@@ -103,7 +100,7 @@ class ArtsSetCommandStrategy(CommandStrategy):
         text = f"""🥷**角色模式**： <font color='#e67700'>**`{role}`**</font> \n\n{answer}"""
         
         message = {
-            "type": "markdown",
+            "msgtype": "markdown",
             "content": text
         }
         return (message , None)

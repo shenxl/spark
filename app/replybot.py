@@ -38,23 +38,23 @@ class replyBot:
         }
         
         logger.info(message)
-        type = message["type"]
-        if type == "markdown":
+        msgtype = message["msgtype"]
+        if msgtype == "markdown":
             result = {
                 "msgtype": "markdown",
                 "markdown": {
-                    "text":f"<at user_id=\"{self.user_id}\"></at> \n\n {message['content']}"
+                    "text":f"<at user_id=\"{self.user_id}\"></at> \n\n{message['content']}"
                 }
             }
             
-        if type =="link":
+        if msgtype =="link":
             result = message
             
-        if type =="link":
+        if msgtype =="text":
             result = {
                 "msgtype": "text",
                 "text": {
-                    "content": f"<at user_id=\"{self.user_id}\"></at>{message['content']}"
+                    "content": f"<at user_id=\"{self.user_id}\"></at> \n\n{message['content']}"
                 }
             }
         

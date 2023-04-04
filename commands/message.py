@@ -60,7 +60,7 @@ class MessageCommandStrategy(CommandStrategy):
         answer = reply.content
         user_id = robot["user_id"]
         message = {
-            "type": "text",
+            "msgtype": "text",
             "content": answer
         }
         return (message , None)
