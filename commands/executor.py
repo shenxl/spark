@@ -47,21 +47,18 @@ class HelpCommandStrategy(CommandStrategy):
                         for command_type in CommandType if self.executor.instruction_desc[command_type]]
             title = "📖<font color='#1E90FF'>帮助</font>"
             info = "\n".join(desc_list)
+            
             message = {
-                "msgtype": "markdown",
-                "markdown": {
-                    "text": f"#### {title}  \n\n {info}"
-                }
+                "type": "markdown",
+                "content": f"#### {title}  \n\n {info}"
             }
             return (message , None)
 
 class UnknownCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
         message = {
-            "msgtype": "markdown",
-            "markdown": {
-                "text": f"无法识别的指令"
-            }
+            "type": "markdown",
+            "content":"无法识别的指令"
         }
         return (message , None)
 

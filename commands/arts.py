@@ -54,13 +54,22 @@ logger = Logger(__name__)
 class ArtsCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
         # 当前bot的当前用户对话, 判断是否是以 act-> 开头
-        user_id = robot["user_id"]
+        # user_id = robot["user_id"]
+
         message = {
-            "msgtype": "text",
-            "text": {
-                "content": f"<at user_id=\"{user_id}\"></at>https://kdocs.cn/l/cgPpL1tqMyUe"
+            "msgtype": "link",
+            "link": {
+                "title": "🥷 角色卡片",
+                "text": "- 请在列表中挑选角色 \n"+
+                    "- 通过指令 `%acts set <序号>%` 进行角色设定  \n"+
+                    "例如：`%acts set 5%`  \n"+
+                    "- BOT会依据此角色的设定与你交流",
+                "messageUrl": "https://kdocs.cn/l/cgPpL1tqMyUe",
+                "btnTitle": "查看列表"
             }
         }
+        
+        
         return (message , None)
     
 
@@ -73,28 +82,28 @@ class ArtsSetCommandStrategy(CommandStrategy):
         row = df.loc[df['num'] == int(command_arg), ['role', 'prompt']].squeeze()
         role, prompt = row['role'], row['prompt']
         
-        template="以下是一份角色扮演的prompt,请理解并从扮演者的角度，给出对此prompt的简要解释。\
-            考虑用户应该如何与此扮演者进行交互，并给出示例\
-            返回格式为:\
-            ---\
-            💡 简要解释:\
-            ---\
-            使用例子:\
-            🙎 用户(user): \
-            🥷 扮演者(bot): "
+        template="""以下是一份知道如何扮演{角色}的prompt,请理解要扮演的角色:{角色}，
+        并从{角色}的角度，给出此角色的自我介绍。
+        考虑用户应该如何与{角色}进行交互,给出简短的示例对话
+        确保返回格式为:
+        -----------------
+        #### 💡 自我介绍:
+        #### 👀 示例对话:
+        🙎 **用户[User]**:
+        
+        🥷 **{角色}[bot]**:
+        """
         
         system_message_prompt = SystemMessagePromptTemplate.from_template(template)
         human_template="prompt:{text}"
         human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
         chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
-        reply = chat(chat_prompt.format_prompt(text=prompt).to_messages())
+        reply = chat(chat_prompt.format_prompt(text=prompt,角色=role).to_messages())
         answer = reply.content
-        
+        text = f"""🥷**角色模式**： <font color='#e67700'>**`{role}`**</font> \n\n{answer}"""
         
         message = {
-            "msgtype": "markdown",
-            "markdown": {
-                "text": f"<at user_id=\"{user_id}\"></at>当前需要设置的角色为{role}:\n\n{answer}"
-            }
+            "type": "markdown",
+            "content": text
         }
         return (message , None)

@@ -36,4 +36,26 @@ class replyBot:
             "Content-Type": "application/json",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
         }
-        requests.post(self.hook_url, data=json.dumps(message), headers=header)
+        
+        logger.info(message)
+        type = message["type"]
+        if type == "markdown":
+            result = {
+                "msgtype": "markdown",
+                "markdown": {
+                    "text":f"<at user_id=\"{self.user_id}\"></at> \n\n {message['content']}"
+                }
+            }
+            
+        if type =="link":
+            result = message
+            
+        if type =="link":
+            result = {
+                "msgtype": "text",
+                "text": {
+                    "content": f"<at user_id=\"{self.user_id}\"></at>{message['content']}"
+                }
+            }
+        
+        requests.post(self.hook_url, data=json.dumps(result), headers=header)

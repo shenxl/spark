@@ -60,9 +60,7 @@ class MessageCommandStrategy(CommandStrategy):
         answer = reply.content
         user_id = robot["user_id"]
         message = {
-            "msgtype": "text",
-            "text": {
-                "content": f"<at user_id=\"{user_id}\"></at>{answer}"
-            }
+            "type": "text",
+            "content": answer
         }
         return (message , None)
