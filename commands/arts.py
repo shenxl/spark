@@ -73,7 +73,8 @@ class ArtsSetCommandStrategy(CommandStrategy):
         row = df.loc[df['num'] == int(command_arg), ['role', 'prompt']].squeeze()
         role, prompt = row['role'], row['prompt']
         
-        template="请理解以下的扮演者的prompt,为用户与该prompt交流做出简要解释。并给出一个询问此扮演者的示例\
+        template="以下是一份扮演者的prompt,请理解并从扮演者的角度，给出对此prompt的简要解释。\
+            考虑用户如何与此扮演者进行交互，并给出一个示例\
             返回格式为：\
             ---\
             简要解释:\
@@ -81,7 +82,7 @@ class ArtsSetCommandStrategy(CommandStrategy):
             使用示例:"
         
         system_message_prompt = SystemMessagePromptTemplate.from_template(template)
-        human_template="{text}"
+        human_template="prompt:{text}"
         human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
         chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
         reply = chat(chat_prompt.format_prompt(text=prompt).to_messages())
