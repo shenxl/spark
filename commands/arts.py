@@ -73,12 +73,13 @@ class ArtsSetCommandStrategy(CommandStrategy):
         row = df.loc[df['num'] == int(command_arg), ['role', 'prompt']].squeeze()
         role, prompt = row['role'], row['prompt']
         
-        template="以下是一份扮演者的prompt,请理解并从扮演者的角度，给出对此prompt的简要解释。\
-            考虑用户应该如何与此扮演者进行交互，并给出一个示例\
-            返回格式为：\
+        template="以下是一份角色扮演的prompt,请理解并从扮演者的角度，给出对此prompt的简要解释。\
+            考虑用户应该如何与此扮演者进行交互，并给出示例\
+            返回格式为:\
             ---\
             💡 简要解释:\
             ---\
+            使用例子:\
             🙎 用户(user): \
             🥷 扮演者(bot): "
         
@@ -91,9 +92,9 @@ class ArtsSetCommandStrategy(CommandStrategy):
         
         
         message = {
-            "msgtype": "text",
-            "text": {
-                "content": f"<at user_id=\"{user_id}\"></at>当前需要设置的角色为{role}:\n\n{answer}"
+            "msgtype": "markdown",
+            "markdown": {
+                "text": f"<at user_id=\"{user_id}\"></at>当前需要设置的角色为{role}:\n\n{answer}"
             }
         }
         return (message , None)
