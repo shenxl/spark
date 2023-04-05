@@ -27,6 +27,7 @@ class User:
         
     @staticmethod
     def get_user(user_id):
+        logger.info(session)
         if "users" not in session:
             logger.info("session not created!")
             session["users"] = {}

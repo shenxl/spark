@@ -17,6 +17,7 @@ logger = Logger(__name__)
 # 初始化 Flask 和 Flask-RESTful
 app = Flask(__name__)
 api = Api(app)
+
 app.secret_key = "chat_key_B4sG7hD6K8"
 
 # 创建一个 Memcached 实例
