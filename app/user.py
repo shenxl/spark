@@ -1,5 +1,12 @@
 from flask import session
 from enum import Enum
+from logs.logger import Logger
+
+from logs.logger import Logger
+
+
+# 设置日志
+logger = Logger(__name__)
 
 class UserMode(Enum):
     NORMAL = 0
@@ -21,14 +28,14 @@ class User:
     @staticmethod
     def get_user(user_id):
         if "users" not in session:
-            print("session not created!")
+            logger.info("session not created!")
             session["users"] = {}
         if user_id not in session["users"]:
             session["users"][user_id] = User(user_id)
         return session["users"][user_id]
     
     def update_arts_mode(self, role, prompt, answer):
-        print("update arts mode for",role)
+        logger.info(f"update arts mode for {role}")
         self.mode = UserMode.ARTS
         self.arts_template = prompt
         self.arts_role = role
