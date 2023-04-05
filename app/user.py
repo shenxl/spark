@@ -28,14 +28,14 @@ class User:
     @staticmethod
     def get_user(user_id):
         logger.info(session)
-        # if "users" not in session:
-        #     session.modified = True
-        #     logger.info("session not created!")
-        #     session["users"] = {}
-        if user_id not in session:
+        if "users" not in session:
             session.modified = True
-            session[user_id] = User(user_id)
-        return session[user_id]
+            logger.info("session not created!")
+            session["users"] = {}
+        if user_id not in session["users"]:
+            session.modified = True
+            session["users"][user_id] = User(user_id)
+        return session["users"][user_id]
     
     def update_arts_mode(self, role, prompt, answer):
         logger.info(f"update arts mode for {role}")
@@ -44,4 +44,4 @@ class User:
         self.arts_role = role
         self.arts_answer = answer
         session.modified = True
-        session[self.id] = self
+        session["users"][self.id] = self
