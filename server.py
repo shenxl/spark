@@ -21,7 +21,7 @@ app.secret_key = "chat_key_B4sG7hD6K8"
 
 api = Api(app)
 # 创建一个 Memcached 实例
-redis_store = redis.Redis(host="localhost", port=6379)
+redis_store = redis.Redis(host="127.0.0.1", port=6379)
 
 # 设置 Flask-Session 的配置
 app.config["SESSION_TYPE"] = "redis"
