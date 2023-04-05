@@ -28,6 +28,7 @@ class User:
         return session["users"][user_id]
     
     def update_arts_mode(self, role, prompt, answer):
+        print("update arts mode for",role)
         self.mode = UserMode.ARTS
         self.arts_template = prompt
         self.arts_role = role
