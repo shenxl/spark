@@ -29,9 +29,11 @@ class User:
     def get_user(user_id):
         logger.info(session)
         if "users" not in session:
+            session.modified = True
             logger.info("session not created!")
             session["users"] = {}
         if user_id not in session["users"]:
+            session.modified = True
             session["users"][user_id] = User(user_id)
         return session["users"][user_id]
     
