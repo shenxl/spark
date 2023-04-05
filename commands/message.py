@@ -68,12 +68,12 @@ class MessageCommandStrategy(CommandStrategy):
             
         if user.mode == UserMode.NORMAL:
             memory_key = f"{robot.user_id}_chat_history"
-            chat = PromptLayerChatOpenAI(temperature=0.9, pl_tags=[memory_key])
+            chat = PromptLayerChatOpenAI(temperature=0.9, pl_tags=[robot.user_id,"woa_chat"])
             answer = normalChat(command_arg,memory_key=memory_key,chat=chat)
             
         if user.mode == UserMode.ARTS:
             memory_key = f"{robot.user_id}_{user.arts_role}_history"
-            chat = PromptLayerChatOpenAI(temperature=0.9, pl_tags=[memory_key])
+            chat = PromptLayerChatOpenAI(temperature=0.9, pl_tags=[robot.user_id,user.arts_role,"woa_chat"])
             answer = artsChat(command_arg,user=user,memory_key=memory_key,chat=chat)
         
         message = {
