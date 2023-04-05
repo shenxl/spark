@@ -53,6 +53,14 @@ class MessageCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
         user = User.get_user(robot.user_id)
         logger.info(f"Hello, user {user.id} ({user.status}, {user.mode})")
+        if command_arg == "":
+            User.init(robot.user_id)
+            message = {
+                "msgtype": "markdown",
+                "content": "用户状态初始化完成"
+            }
+            return (message , None)
+            
         if user.mode == UserMode.NORMAL:
             
             template="You are a helpful assistant to me."

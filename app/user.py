@@ -1,4 +1,5 @@
-from flask import session
+import redis
+import json
 from enum import Enum
 from logs.logger import Logger
 
@@ -7,40 +8,73 @@ from logs.logger import Logger
 
 # 设置日志
 logger = Logger(__name__)
-
+# 创建一个 Redis 实例
+redis_client = redis.Redis(host='localhost', port=6379, db=0)
 class UserMode(Enum):
-    NORMAL = 0
-    ARTS = 1
-    FILE = 2
-    ONLINE = 3
+    NORMAL = "NORMAL"
+    ARTS = "ARTS"
+    FILE = "FILE"
+    ONLINE = "ONLINE"
 
+def default(obj):
+    if isinstance(obj, Enum):
+        return obj.value
+    raise TypeError(f'Object of type {obj.__class__.__name__} is not JSON serializable')
 
+def object_hook(obj):
+    if 'mode' in obj:
+        obj['mode'] = UserMode[obj['mode']]
+    return obj
 class User:
     
-    def __init__(self, user_id):
+    def __init__(self, user_id,status="active",
+                mode=UserMode.NORMAL,arts_role=None,
+                arts_template=None,arts_answer=None):
         self.id = user_id
-        self.status = "active"
-        self.mode = UserMode.NORMAL
-        self.arts_role = None
-        self.arts_template = None
-        self.arts_answer = None
+        self.status = status
+        self.mode = mode
+        self.arts_role = arts_role
+        self.arts_template = arts_template
+        self.arts_answer = arts_answer  
+        
+    def to_dict(self):
+        return {
+            'status': self.status,
+            'mode': self.mode,
+            'arts_role': self.arts_role,
+            'arts_template': self.arts_template,
+            'arts_answer': self.arts_answer
+        }
+        
+        
+    @staticmethod
+    def init(user_id):
+        user = User(user_id)
+        redis_data = json.dumps(user.to_dict(), default=default)
+        redis_client.set(user_id, redis_data)
+    
         
     @staticmethod
     def get_user(user_id):
-        logger.info(session)
-        if "users" not in session:
-            logger.info("session not created!")
-            session["users"] = {}
-        if user_id not in session["users"]:
-            session["users"][user_id] = User(user_id)
-        logger.info(f"after create:{session}")
-        return session["users"][user_id]
-    
-    def update_arts_mode(self, role, prompt, answer):
-        logger.info(f"update arts mode for {role}")
-        self.mode = UserMode.ARTS
-        self.arts_template = prompt
-        self.arts_role = role
-        self.arts_answer = answer
-        session.modified = True
-        session["users"][self.id] = self
+        user = redis_client.get(user_id)
+        if user is None:
+            logger.info(f"User {user_id} not found, creating new user")
+            user = User(user_id)
+            redis_data = json.dumps(user.to_dict(), default=default)
+            redis_client.set(user_id, redis_data)
+        else:
+            logger.info(f"User {user_id} found, loading user")
+            user_dict = json.loads(user.decode(), object_hook=object_hook)
+            logger.info(f"User {user_id} loaded, {user_dict}")
+            user = User(user_id, **user_dict)
+        return user
+   
+    @staticmethod
+    def update_arts_mode(user_id, role, prompt, answer):
+        user = User.get_user(user_id)
+        user.mode = UserMode.ARTS
+        user.arts_template = prompt
+        user.arts_role = role
+        user.arts_answer = answer
+        redis_data = json.dumps(user.to_dict(), default=default)
+        redis_client.set(user_id, redis_data)

@@ -23,10 +23,6 @@ class replyBot:
         self.url = data.get("url")
         self.ctime = data.get("ctime")
         self.hook_url = get_config().WOA_URL + key
-        # # user = User.get_user(self.user_id)
-        # # logger.info(f"Hello, user {user.id} ({user.status}, {user.mode})")
-        
-        # self.user = user
     
     # 建立索引操作
     def __getitem__(self, key):
