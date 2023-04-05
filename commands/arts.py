@@ -7,6 +7,7 @@ import pandas as pd
 from .executor import CommandStrategy
 from logs.logger import Logger
 from conf.config import  get_config
+from app.user import  User,UserMode
 
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -55,7 +56,13 @@ class ArtsCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
         # 当前bot的当前用户对话, 判断是否是以 act-> 开头
         # user_id = robot["user_id"]
-        card_text ="""✅ 请在下方列表中挑选角色\n\n✅ 通过指令 `%acts set <序号>%` 进行角色设定, 例如：`%acts set 5%`\n\n✅ BOT会依据此角色的设定与你交流\n\n🎉 玩的开心"""
+        card_text ="""##### 1️⃣ 挑选角色\n\n
+  请在下方列表中挑选角色\n\n
+##### 2️⃣ 发送指令\n\n
+  通过指令 `%arts set <序号>%` 进行角色设定, 例如：`%arts set 5%`\n\n
+##### 3️⃣ 对话\n\n
+  @BOT 后正常对话，Bot会依据此角色的设定与你进行交流\n\n
+### **🎉🎉 玩的开心**"""
         message = {
             "msgtype": "link",
             "link": {
@@ -75,21 +82,22 @@ class ArtsSetCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
         # 当前bot的当前用户对话, 判断是否是以 act-> 开头
         user_id = robot["user_id"]
+        user = User.get_user(robot.user_id)
         
         row = df.loc[df['num'] == int(command_arg), ['role', 'prompt']].squeeze()
         role, prompt = row['role'], row['prompt']
         
-        template="""以下是一份知道如何扮演{角色}的prompt,请理解要扮演的角色:{角色}，
-        并从{角色}的角度，给出此角色的自我介绍。
-        考虑用户应该如何与{角色}进行交互,给出简短的示例对话
-        确保返回格式为:
-        -----------------
-        #### 💡 自我介绍:
-        #### 👀 示例对话:
-        🙎 **用户[User]**:
-        
-        🥷 **{角色}[bot]**:
-        """
+        template="""以下是一份指导如何扮演{角色}的 prompt,
+请理解要扮演的角色:{角色}，并从{角色}的角度，给出此角色的自我介绍。
+考虑用户应该如何与{角色}进行交互,给出简短的示例对话
+确保返回格式为:
+-----------------
+#### 💡 自我介绍:
+#### 👀 示例对话:
+🙎 **用户[User]**:
+
+🥷 **{角色}[bot]**:
+"""
         
         system_message_prompt = SystemMessagePromptTemplate.from_template(template)
         human_template="prompt:{text}"
@@ -98,7 +106,7 @@ class ArtsSetCommandStrategy(CommandStrategy):
         reply = chat(chat_prompt.format_prompt(text=prompt,角色=role).to_messages())
         answer = reply.content
         text = f"""🥷**角色模式**： <font color='#e67700'>**`{role}`**</font> \n\n{answer}"""
-        
+        user.update_arts_mode(role=role, prompt=prompt, answer=answer)
         message = {
             "msgtype": "markdown",
             "content": text

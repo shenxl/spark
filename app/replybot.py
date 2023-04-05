@@ -2,14 +2,17 @@
 import json
 import requests
 from typing import Dict
+from .user import User
 
 # from src.mocks.bots import mockBot
 from conf.config import get_config
 from logs.logger import Logger
 
+
 # 设置日志
 logger = Logger(__name__)
 # mockbots = mockBot()
+# 创建一个 Memcached 实例
 
 class replyBot:
     def __init__(self, data: Dict, key):
@@ -20,6 +23,10 @@ class replyBot:
         self.url = data.get("url")
         self.ctime = data.get("ctime")
         self.hook_url = get_config().WOA_URL + key
+        # # user = User.get_user(self.user_id)
+        # # logger.info(f"Hello, user {user.id} ({user.status}, {user.mode})")
+        
+        # self.user = user
     
     # 建立索引操作
     def __getitem__(self, key):
@@ -37,7 +44,7 @@ class replyBot:
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
         }
         
-        logger.info(message)
+        # logger.info(message)
         msgtype = message["msgtype"]
         if msgtype == "markdown":
             result = {

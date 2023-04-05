@@ -6,6 +6,7 @@ from itertools import chain
 from .executor import CommandStrategy
 from logs.logger import Logger
 from conf.config import  get_config
+from app.user import  User,UserMode
 
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
@@ -50,17 +51,32 @@ chat = PromptLayerChatOpenAI(temperature=0.9, pl_tags=["woa_chat"])
 logger = Logger(__name__)
 class MessageCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
-        # 当前bot的当前用户对话, 判断是否是以 act-> 开头
-        template="You are a helpful assistant to me."
-        system_message_prompt = SystemMessagePromptTemplate.from_template(template)
-        human_template="{text}"
-        human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
-        chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
-        reply = chat(chat_prompt.format_prompt(text=command_arg).to_messages())
-        answer = reply.content
-        user_id = robot["user_id"]
+        user = User.get_user(robot.user_id)
+        logger.info(f"Hello, user {user.id} ({user.status}, {user.mode})")
+        if user.mode == UserMode.NORMAL:
+            
+            template="You are a helpful assistant to me."
+            system_message_prompt = SystemMessagePromptTemplate.from_template(template)
+            human_template="{text}"
+            human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+            chat_prompt = ChatPromptTemplate.from_messages([system_message_prompt, human_message_prompt])
+            reply = chat(chat_prompt.format_prompt(text=command_arg).to_messages())
+            answer = reply.content
+            
+        if user.mode == UserMode.ARTS:
+            template = user.arts_template
+            ai_answer = user.arts_answer
+            
+            system_message = SystemMessage(content=template)
+            example_ai = SystemMessage(content=ai_answer)
+            human_template="{text}"
+            human_message_prompt = HumanMessagePromptTemplate.from_template(human_template)
+        
+            chat_prompt = ChatPromptTemplate.from_messages([system_message, example_ai,human_message_prompt])
+            reply = chat(chat_prompt.format_prompt(text=command_arg).to_messages())
+            answer = text = f"""🥷**角色模式**： <font color='#e67700'>**`{user.arts_role}`**</font> \n\n{reply.content}"""
         message = {
-            "msgtype": "text",
+            "msgtype": "markdown",
             "content": answer
         }
         return (message , None)
