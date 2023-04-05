@@ -53,19 +53,21 @@ class User:
         redis_data = json.dumps(user.to_dict(), default=default)
         redis_client.set(user_id, redis_data)
     
+    @staticmethod
+    def clear_redis(user_id):
+        keys = redis_client.keys(f'message_store:{user_id}_*')
+        for key in keys:
+            redis_client.delete(key)
         
     @staticmethod
     def get_user(user_id):
         user = redis_client.get(user_id)
         if user is None:
-            logger.info(f"User {user_id} not found, creating new user")
             user = User(user_id)
             redis_data = json.dumps(user.to_dict(), default=default)
             redis_client.set(user_id, redis_data)
         else:
-            logger.info(f"User {user_id} found, loading user")
             user_dict = json.loads(user.decode(), object_hook=object_hook)
-            logger.info(f"User {user_id} loaded, {user_dict}")
             user = User(user_id, **user_dict)
         return user
    
