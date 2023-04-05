@@ -21,6 +21,7 @@ class User:
     @staticmethod
     def get_user(user_id):
         if "users" not in session:
+            print("session not created!")
             session["users"] = {}
         if user_id not in session["users"]:
             session["users"][user_id] = User(user_id)

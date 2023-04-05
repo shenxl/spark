@@ -82,7 +82,7 @@ class ArtsSetCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
         # 当前bot的当前用户对话, 判断是否是以 act-> 开头
         user_id = robot["user_id"]
-        user = User.get_user(robot.user_id)
+        user = User.get_user(user_id)
         
         row = df.loc[df['num'] == int(command_arg), ['role', 'prompt']].squeeze()
         role, prompt = row['role'], row['prompt']
