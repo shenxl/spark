@@ -62,7 +62,7 @@ class FilesInitCommandStrategy(CommandStrategy):
         # user_id = robot["user_id"]
         # User.update_files_mode(user_id, role=role, prompt=prompt, answer=answer)
         folder = f"tools/download/"
-        url = f"{get_config().KDOC_BASE_URL}l/{command_arg}"
+        url = f"{get_config().KDOC_BASE_URL}/l/{command_arg}"
 
         fileinfo = get_html(url)
         
@@ -72,12 +72,12 @@ class FilesInitCommandStrategy(CommandStrategy):
             groupid = info["groupid"]
             fid = info["id"]
             extension = fname.split('.')[-1]
-            logger.info(f"文件名:{fname} groupid:{groupid} fid:{fid} extension:{extension}")
+            # logger.info(f"文件名:{fname} groupid:{groupid} fid:{fid} extension:{extension}")
             
             if extension == "otl":
                 url = get_url(command_arg)
             else:
-                url =  f'{get_config().DRIVE_BASE_URL}api/v5/groups/{groupid}/files/{fid}/download?support_checksums=md5,sha1,sha224,sha256,sha384,sha512'
+                url =  f'{get_config().DRIVE_BASE_URL}/api/v5/groups/{groupid}/files/{fid}/download?support_checksums=md5,sha1,sha224,sha256,sha384,sha512'
                 url = fetch_minio_url(url)
             
             if url is not None and url != "permissionDenied":

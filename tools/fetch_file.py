@@ -18,9 +18,9 @@ import random
 from requests_html import HTMLSession
 
 from logs import logger
-from conf.config import get_config
 
 from logs.logger import Logger
+from conf.config import get_config
 
 
 # 设置日志
@@ -59,7 +59,7 @@ def fetch_info_url(str):
     if len(file_ids) > 0 :
         file_id = file_ids[0]
         # group_id = group_ids[0]
-        return f"{get_config().DRIVE_BASE_URL}api/v5/links/{file_id}"
+        return f"{get_config().DRIVE_BASE_URL}/api/v5/links/{file_id}"
     return ""
 
 def fetch_minio_url(url):
@@ -73,7 +73,7 @@ def export_pdf_url(fileid,again=False,version=None):
     session = HTMLSession()
     cookie_dict = load_cookie()
     payload = {
-        "url": f"{get_config().KDOC_BASE_URL}l/{fileid}",
+        "url": f"{get_config().KDOC_BASE_URL}/l/{fileid}",
         "url_param": "pdfExport&simple&export=true&hideguide&disableNps&adaptiveWidth",
         "margin_top": 0.7,
         "margin_bottom": 0.7,
@@ -88,22 +88,10 @@ def export_pdf_url(fileid,again=False,version=None):
         "print": False
     }
     headers = {
-        "referer":f"{get_config().KDOC_BASE_URL}l/{fileid}",
-        "origin":{get_config().KDOC_BASE_URL}}
-    
-    # cookies = {
-    #     "weboffice_device_id":"d05d69874b794b6866f4fc120a2ee4c9",
-    #     "weboffice_cdn":"19",
-    #     "wps_sid":"V02SPGWcdR5Bh5Wcfm8oBCkrvOZkdmo00a6f280400529bcd47",
-    #     "userInNewLayout":"True",
-    #     "lang":"zh-CN",
-    #     "appcdn":"volcengine-kdocs-cache.wpscdn.cn",
-    #     "swi_acc_redirect_limit":"0",
-    #     "visitorid":"1887230757",
-    #     "wpsua":"V1BTVUEvMS4wICh3ZWIta2RvY3M6Q2hyb21lXzExMS4wLjAuMDsgd2luZG93czpXaW5kb3dzIDEwLjA7IDlXZ21vZkNZUUNlb202dW9CZURMMFE9PTpRMmh5YjIxbElDQXhNVEV1TUM0d0xqQT0pIENocm9tZS8xMTEuMC4wLjA=",
-    #     "csrf":"ZQK5DWMxaiiaR8Tw76dQc5YsbjQk6P2M","env":"prod-1","region":"hw","userid":"1385942343"}
+        "referer":f"{get_config().KDOC_BASE_URL}/l/{fileid}",
+        "origin":f"{get_config().KDOC_BASE_URL}"}
 
-    url = f"{get_config().KDOC_BASE_URL}api/v3/office/outline/file/{fileid}/version/{version}/export/pdf"
+    url = f"{get_config().KDOC_BASE_URL}/api/v3/office/outline/file/{fileid}/version/{version}/export/pdf"
     
     if again == True:
         url = url + "/get"
