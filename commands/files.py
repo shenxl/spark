@@ -72,17 +72,19 @@ class FilesInitCommandStrategy(CommandStrategy):
             groupid = info["groupid"]
             fid = info["id"]
             extension = fname.split('.')[-1]
+            logger.info(f"文件名:{fname} groupid:{groupid} fid:{fid} extension:{extension}")
+            
             if extension == "otl":
                 url = get_url(command_arg)
             else:
                 url =  f'{get_config().DRIVE_BASE_URL}api/v5/groups/{groupid}/files/{fid}/download?support_checksums=md5,sha1,sha224,sha256,sha384,sha512'
                 url = fetch_minio_url(url)
-                
+            
             if url is not None and url != "permissionDenied":
                 filename = fetch_file(folder,command_arg,url)
                 message = {
                     "msgtype": "markdown",
-                    "content": ("### 文档处理完成\n\n"
+                    "content": (f"### 文档{fname}处理完成\n\n"
                                 "- 请使用命令`%files ask%` 对文档进行问答 \n\n"
                                 "- 使用命令%files% 查看文档卡片 \n\n"
                                 "- 使用命令%files ls% 展示文档上传的列表 \n\n" )
@@ -91,7 +93,7 @@ class FilesInitCommandStrategy(CommandStrategy):
             elif url == "permissionDenied":
                 message = {
                     "msgtype": "markdown",
-                    "content": "### 文件权限不足"
+                    "content": f"### 文件:{fname}权限不足"
                 }
                 return (message , None)
             
