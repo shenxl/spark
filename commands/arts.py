@@ -1,7 +1,6 @@
 import socks
 import socket
 import os
-from itertools import chain
 import pandas as pd
 
 from .executor import CommandStrategy
@@ -9,22 +8,12 @@ from logs.logger import Logger
 from conf.config import  get_config
 from app.user import  User
 
-from langchain.chat_models import ChatOpenAI
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
 
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain.schema import (
-    AIMessage,
-    HumanMessage,
-    SystemMessage
-)
-
 
 from langchain.chat_models import PromptLayerChatOpenAI
 import promptlayer
@@ -48,7 +37,7 @@ if env != 'prod':
     socket.socket = socks.socksocket
 
 promptlayer.api_key =get_config().PROMPTLAYER_KEY   
-chat = PromptLayerChatOpenAI(temperature=0.9, pl_tags=["woa_chat"])
+chat = PromptLayerChatOpenAI(temperature=0.9, pl_tags=["arts","woa_chat"])
 
 # 设置日志
 logger = Logger(__name__)

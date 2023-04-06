@@ -1,4 +1,5 @@
 /app/private/
+/tools/download/
 /conf/conf_dev.py
 # Other
 .idea/

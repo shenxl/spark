@@ -10,6 +10,7 @@ class CommandType(Enum):
     ARTS = 3
     ARTS_SET = 5
     FILES = 6
+    FILES_INIT = 7
     FILES_ASK = 8
     INFO = 9
     SK_SET = 10
