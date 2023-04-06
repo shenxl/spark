@@ -14,8 +14,8 @@ from commands.files import FilesInitCommandStrategy,FilesCommandStrategy
 
 logger = Logger(__name__)
 
+# 策略模式，根据不同的指令，执行不同的策略
 executor = CommandExecutor()
-
 executor.add_strategy(CommandType.HELP, HelpCommandStrategy(executor))
 executor.add_strategy(CommandType.MSG, MessageCommandStrategy())
 executor.add_strategy(CommandType.UNKNOWN, UnknownCommandStrategy())
@@ -24,6 +24,7 @@ executor.add_strategy(CommandType.ARTS_SET, ArtsSetCommandStrategy())
 executor.add_strategy(CommandType.FILES, FilesCommandStrategy())
 executor.add_strategy(CommandType.FILES_INIT, FilesInitCommandStrategy())
 
+# 策略描述，用于帮助信息
 executor.set_instruction_desc(CommandType.HELP,"输入%help%, 显示所有指令列表。")
 executor.set_instruction_desc(CommandType.ARTS,"输入%arts%, 显示「角色」卡片。")
 executor.set_instruction_desc(CommandType.ARTS_SET,"输入%arts set xx%, 设置指定的角色。")

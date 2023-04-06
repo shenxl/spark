@@ -62,7 +62,7 @@ class FilesInitCommandStrategy(CommandStrategy):
         # user_id = robot["user_id"]
         # User.update_files_mode(user_id, role=role, prompt=prompt, answer=answer)
         folder = f"tools/download/"
-        url = f"https://www.kdocs.cn/l/{command_arg}"
+        url = f"{get_config().KDOC_BASE_URL}l/{command_arg}"
 
         fileinfo = get_html(url)
         
@@ -75,20 +75,29 @@ class FilesInitCommandStrategy(CommandStrategy):
             if extension == "otl":
                 url = get_url(command_arg)
             else:
-                url =  f'https://drive.kdocs.cn/api/v5/groups/{groupid}/files/{fid}/download?support_checksums=md5,sha1,sha224,sha256,sha384,sha512'
+                url =  f'{get_config().DRIVE_BASE_URL}api/v5/groups/{groupid}/files/{fid}/download?support_checksums=md5,sha1,sha224,sha256,sha384,sha512'
                 url = fetch_minio_url(url)
                 
             if url is not None and url != "permissionDenied":
                 filename = fetch_file(folder,command_arg,url)
+                message = {
+                    "msgtype": "markdown",
+                    "content": ("### 文档处理完成\n\n"
+                                "- 请使用命令`%files ask%` 对文档进行问答 \n\n"
+                                "- 使用命令%files% 查看文档卡片 \n\n"
+                                "- 使用命令%files ls% 展示文档上传的列表 \n\n" )
+                }
+                return (message , None)
             elif url == "permissionDenied":
                 message = {
                     "msgtype": "markdown",
-                    "content": "文件权限不足"
+                    "content": "### 文件权限不足"
                 }
                 return (message , None)
             
             message = {
                 "msgtype": "markdown",
-                "content": command_arg
+                "content": ("### 文档处理失败\n\n"
+                            f"请确认{command_arg}参数是否正确")
             }
-        return (None , None)
+        return (message , None)
