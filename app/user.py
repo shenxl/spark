@@ -28,14 +28,19 @@ def object_hook(obj):
 class User:
     
     def __init__(self, user_id,status="active",
-                mode=UserMode.NORMAL,arts_role=None,
-                arts_template=None,arts_answer=None):
+                mode=UserMode.NORMAL, 
+                arts_role=None,arts_template=None, arts_answer=None,
+                file_type=None,file_name=None,file_id=None):
+        
         self.id = user_id
         self.status = status
         self.mode = mode
         self.arts_role = arts_role
         self.arts_template = arts_template
         self.arts_answer = arts_answer  
+        self.file_type = file_type
+        self.file_name = file_name
+        self.file_id = file_id
         
     def to_dict(self):
         return {
@@ -43,7 +48,10 @@ class User:
             'mode': self.mode,
             'arts_role': self.arts_role,
             'arts_template': self.arts_template,
-            'arts_answer': self.arts_answer
+            'arts_answer': self.arts_answer,
+            'file_type': self.file_type,
+            'file_name': self.file_name,
+            'file_id': self.file_id,
         }
         
         
@@ -75,8 +83,25 @@ class User:
     def update_arts_mode(user_id, role, prompt, answer):
         user = User.get_user(user_id)
         user.mode = UserMode.ARTS
+        user.file_type = None
+        user.file_id = None
+        user.file_name = None
         user.arts_template = prompt
         user.arts_role = role
         user.arts_answer = answer
+        redis_data = json.dumps(user.to_dict(), default=default)
+        redis_client.set(user_id, redis_data)
+    
+    @staticmethod   
+    def update_files_mode(user_id,fileid, filename, filetype):
+        user = User.get_user(user_id)
+        user.mode = UserMode.FILE
+        user.arts_template = None
+        user.arts_role = None
+        user.arts_answer = None
+        user.file_id = fileid
+        user.file_name = filename
+        user.file_type = filetype
+        
         redis_data = json.dumps(user.to_dict(), default=default)
         redis_client.set(user_id, redis_data)

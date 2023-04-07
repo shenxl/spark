@@ -7,6 +7,7 @@ from logs.logger import Logger
 from conf.config import  get_config
 from app.user import  User
 from tools.fetch_file import get_html,fetch_file,get_url,fetch_minio_url
+from .chat_files import filesChat
 
 
 from langchain.chat_models import PromptLayerChatOpenAI
@@ -35,8 +36,7 @@ chat = PromptLayerChatOpenAI(temperature=0.9, pl_tags=["woa_chat"])
 logger = Logger(__name__)
 class FilesCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
-        # 当前bot的当前用户对话, 判断是否是以 act-> 开头
-        # user_id = robot["user_id"]
+        #user_id = robot["user_id"]
         card_text ="""##### 1️⃣ 提供文档\n\n
 ##### 2️⃣ 发送指令\n\n
   通过指令 `%files ask <id>%` 进行角色设定, 例如：`%files ask cgPpL1tqMyUe%`\n\n
@@ -54,13 +54,30 @@ class FilesCommandStrategy(CommandStrategy):
         
         return (message , None)
     
-
+class FilesASKCommandStrategy(CommandStrategy):
+    def execute(self, robot, command_arg):
+        if command_arg is None:
+            user = User.get_user(robot.user_id)
+            chatllm = PromptLayerChatOpenAI(temperature=0.5, pl_tags=[robot.user_id,user.file_name,"woa_chat"])
+            query = "请针对文档内容，提出三个问题，以便提问者可以基于这些问题，深入了解文档内容"
+            answer = filesChat(query,user=user,chatllm=chatllm)
+            
+            message = {
+                "msgtype": "markdown",
+                "content": answer
+            }
+            return (message , None)
+        else:
+            User.update_files_mode(robot.user_id, fileid=command_arg,filename="未知文档",filetype="pdf")
+            message = {
+                "msgtype": "markdown",
+                "content": f"切换文档成功{command_arg}"
+            }
+            return (message , None)
 
 class FilesInitCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
-        # 当前bot的当前用户对话, 判断是否是以 act-> 开头
-        # user_id = robot["user_id"]
-        # User.update_files_mode(user_id, role=role, prompt=prompt, answer=answer)
+        user_id = robot["user_id"]
         folder = f"tools/download/"
         url = f"{get_config().KDOC_BASE_URL}/l/{command_arg}"
 
@@ -81,7 +98,11 @@ class FilesInitCommandStrategy(CommandStrategy):
                 url = fetch_minio_url(url)
             
             if url is not None and url != "permissionDenied":
-                filename = fetch_file(folder,command_arg,url)
+                # 下载文件
+                (id, type) =  fetch_file(folder,command_arg,url)
+                # 更新用户文件信息
+                User.update_files_mode(user_id, fileid=command_arg,filename=fname,filetype=type)
+                # 进行索引建立
                 message = {
                     "msgtype": "markdown",
                     "content": (f"### 文档{fname}处理完成\n\n"
@@ -102,4 +123,5 @@ class FilesInitCommandStrategy(CommandStrategy):
                 "content": ("### 文档处理失败\n\n"
                             f"请确认{command_arg}参数是否正确")
             }
+
         return (message , None)

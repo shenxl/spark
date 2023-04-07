@@ -135,7 +135,7 @@ def fetch_file(folder,id,miniourl):
         name = id + '.' + extension
         # 打印文件名和扩展名
         f = open(folder + name, 'wb').write(response.content)
-        return folder + name
+        return (id,extension)
     
 def generate_random_string():
     return f"{random.randint(1000, 9999)}_{random.randint(1, 9)}_{random.randint(1, 9)}"

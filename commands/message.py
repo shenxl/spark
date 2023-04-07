@@ -9,26 +9,7 @@ from conf.config import get_config
 from app.user import  User,UserMode
 from .chat_normal import normalChat
 from .chat_arts import artsChat
-
-from langchain.chat_models import ChatOpenAI
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
-
-from langchain.memory.chat_memory import ChatMessageHistory
-from langchain.memory.chat_message_histories import RedisChatMessageHistory
-from langchain.memory import ConversationBufferWindowMemory
-    
-from langchain.prompts.chat import (
-    ChatPromptTemplate,
-    SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
-    HumanMessagePromptTemplate,
-)
-from langchain.schema import (
-    HumanMessage,
-    SystemMessage
-)
-
+from .chat_files import filesChat
 
 from langchain.chat_models import PromptLayerChatOpenAI
 import promptlayer
@@ -75,6 +56,10 @@ class MessageCommandStrategy(CommandStrategy):
             memory_key = f"{robot.user_id}_{user.arts_role}_history"
             chat = PromptLayerChatOpenAI(temperature=0.9, pl_tags=[robot.user_id,user.arts_role,"woa_chat"])
             answer = artsChat(command_arg,user=user,memory_key=memory_key,chat=chat)
+        
+        if user.mode == UserMode.FILE:
+            chatllm = PromptLayerChatOpenAI(temperature=0.5, pl_tags=[robot.user_id,user.file_name,"woa_chat"])
+            answer = filesChat(command_arg,user=user,chatllm=chatllm)
         
         message = {
             "msgtype": "markdown",

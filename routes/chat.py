@@ -10,7 +10,7 @@ from commands.parse import CommandType
 from commands.executor import HelpCommandStrategy, UnknownCommandStrategy
 from commands.message import MessageCommandStrategy
 from commands.arts import ArtsCommandStrategy,ArtsSetCommandStrategy
-from commands.files import FilesInitCommandStrategy,FilesCommandStrategy
+from commands.files import FilesInitCommandStrategy,FilesCommandStrategy,FilesASKCommandStrategy
 
 logger = Logger(__name__)
 
@@ -22,6 +22,7 @@ executor.add_strategy(CommandType.UNKNOWN, UnknownCommandStrategy())
 executor.add_strategy(CommandType.ARTS, ArtsCommandStrategy())
 executor.add_strategy(CommandType.ARTS_SET, ArtsSetCommandStrategy())
 executor.add_strategy(CommandType.FILES, FilesCommandStrategy())
+executor.add_strategy(CommandType.FILES_ASK, FilesASKCommandStrategy())
 executor.add_strategy(CommandType.FILES_INIT, FilesInitCommandStrategy())
 
 # 策略描述，用于帮助信息
