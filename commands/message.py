@@ -35,18 +35,20 @@ promptlayer.api_key =get_config().PROMPTLAYER_KEY
 
 # 设置日志
 logger = Logger(__name__)
+
 class MessageCommandStrategy(CommandStrategy):
     def execute(self, robot, command_arg):
         user = User.get_user(robot.user_id)
         if command_arg == "":
             User.init(robot.user_id)
             User.clear_redis(robot.user_id)
+            
             message = {
                 "msgtype": "markdown",
                 "content": "用户状态初始化完成"
             }
             return (message , None)
-            
+        
         if user.mode == UserMode.NORMAL:
             memory_key = f"{robot.user_id}_chat_history"
             chat = PromptLayerChatOpenAI(temperature=0.9, pl_tags=[robot.user_id,"woa_chat"])
