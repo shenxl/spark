@@ -1,8 +1,8 @@
 colorlog==5.0.1
 Flask==2.2.3
 Flask_RESTful==0.3.9
-langchain==0.0.160
-llama_index==0.6.1
+langchain==0.0.142
+llama_index==0.5.23.post1
 pandas==1.5.3
 promptlayer==0.1.79
 redis==4.5.4
