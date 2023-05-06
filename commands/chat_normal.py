@@ -11,7 +11,7 @@ from langchain.schema import (
 def normalChat(command_arg,memory_key,chat):
     message_db = RedisChatMessageHistory(url='redis://localhost:6379/0', ttl=3600, session_id=memory_key)
     memory = ConversationBufferWindowMemory(memory_key=memory_key, 
-                                            k=5, chat_memory=message_db, 
+                                            k=3, chat_memory=message_db, 
                                             return_messages=True)
     memory_buffer = memory.load_memory_variables({})
     chat_history = []
