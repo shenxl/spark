@@ -60,5 +60,5 @@ class replyBot:
                     "content": f"<at user_id=\"{self.user_id}\"></at> \n\n{message['content']}"
                 }
             }
-        
+        logger.info(f"self.hook_url:{self.hook_url}")
         requests.post(self.hook_url, data=json.dumps(result), headers=header)
