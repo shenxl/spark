@@ -89,7 +89,8 @@ def export_pdf_url(fileid,again=False,version=None):
     }
     headers = {
         "referer":f"{get_config().KDOC_BASE_URL}/l/{fileid}",
-        "origin":f"{get_config().KDOC_BASE_URL}"}
+        "origin":f"{get_config().KDOC_BASE_URL}"
+    }
 
     url = f"{get_config().KDOC_BASE_URL}/api/v3/office/outline/file/{fileid}/version/{version}/export/pdf"
     

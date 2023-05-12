@@ -33,7 +33,8 @@ class replyBot:
     
     def reply(self, message):
         parsed_url = urlparse(self.hook_url)
-        host = parsed_url.netloc
+        # host = parsed_url.netloc
+        host = "xz.wps.cn"
         logger.info("host:",host)
         header = {
             "Accept": "*/*",
