@@ -2,8 +2,9 @@
 import json
 import requests
 from typing import Dict
-from .user import User
+from urllib.parse import urlparse
 
+from .user import User
 # from src.mocks.bots import mockBot
 from conf.config import get_config
 from logs.logger import Logger
@@ -29,13 +30,17 @@ class replyBot:
         return getattr(self, key, None)
     
     # 答复方法，需要针对不同的状态进行答复
-    def reply(self, message): 
+    
+    def reply(self, message):
+        parsed_url = urlparse(self.hook_url)
+        host = parsed_url.netloc
+        logger.info("host:",host)
         header = {
             "Accept": "*/*",
             "Accept-Encoding": "gzip, deflate, br",
             "Accept-Language": "zh-CN,zh;q=0.9",
             "Connection": "keep-alive",
-            "Host":"xz.wps.cn",
+            "Host":host,
             "Content-Type": "application/json",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
         }
@@ -60,7 +65,4 @@ class replyBot:
                     "content": f"<at user_id=\"{self.user_id}\"></at> \n\n{message['content']}"
                 }
             }
-
-        logger.info(f"self.hook_url:{self.hook_url}")
-        logger.info(result)
         requests.post(self.hook_url, data=json.dumps(result), headers=header)
