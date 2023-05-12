@@ -40,7 +40,7 @@ class replyBot:
             "Accept-Encoding": "gzip, deflate, br",
             "Accept-Language": "zh-CN,zh;q=0.9",
             "Connection": "keep-alive",
-            "Host":host,
+            "Host":f"{host}",
             "Content-Type": "application/json",
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.159 Safari/537.36"
         }
@@ -65,4 +65,5 @@ class replyBot:
                     "content": f"<at user_id=\"{self.user_id}\"></at> \n\n{message['content']}"
                 }
             }
+        
         requests.post(self.hook_url, data=json.dumps(result), headers=header)
